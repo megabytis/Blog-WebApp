@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 
 const { connectDB } = require("./config/database");
 
@@ -7,6 +8,7 @@ const postRouter = require("./routers/postRouter");
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/", authRouter);
 app.use("/", postRouter);
