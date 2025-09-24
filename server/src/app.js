@@ -2,16 +2,18 @@ const express = require("express");
 
 const { connectDB } = require("./config/database");
 
+const authRouter = require("./routers/authRouter");
+
 const app = express();
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.json({
-    message: "hello blog!",
-  });
+app.use("/", authRouter);
+
+// Global ERRROR HANDLER
+app.use((err, req, res) => {
+  res.json({ message: `ERRRO: ${err.message}` });
 });
 
-// connect to Mongo
 connectDB()
   .then(() => console.log("MongoDB connected"))
   .then(() => {
