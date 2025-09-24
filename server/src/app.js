@@ -3,15 +3,17 @@ const express = require("express");
 const { connectDB } = require("./config/database");
 
 const authRouter = require("./routers/authRouter");
+const postRouter = require("./routers/postRouter");
 
 const app = express();
 app.use(express.json());
 
 app.use("/", authRouter);
+app.use("/", postRouter);
 
 // Global ERRROR HANDLER
 app.use((err, req, res) => {
-  res.json({ message: `ERRRO: ${err.message}` });
+  res.status(err.statusCode || 500).json({ message: `ERROR: ${err.message}` });
 });
 
 connectDB()

@@ -6,9 +6,9 @@
 
 # post
 
-/post/createpost
-/post/single
-/post/all (includes pagination, filter & search)
+/post/create
+/post/read/single
+/post/read/all (includes pagination, filter & search)
 /post/update
 /post/delete
 
