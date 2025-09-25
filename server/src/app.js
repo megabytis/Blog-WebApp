@@ -14,8 +14,10 @@ app.use("/", authRouter);
 app.use("/", postRouter);
 
 // Global ERRROR HANDLER
-app.use((err, req, res) => {
-  res.status(err.statusCode || 500).json({ message: `ERROR: ${err.message}` });
+app.use((err, req, res, next) => {
+  res
+    .status(err.statusCode || 500)
+    .json({ success: false, message: `ERROR: ${err.message}` });
 });
 
 connectDB()
