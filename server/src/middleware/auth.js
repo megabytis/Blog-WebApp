@@ -13,7 +13,7 @@ const userAuth = async (req, res, next) => {
 
     const { _id } = foundUserObject;
 
-    const foundUser = userModel.findById(_id);
+    const foundUser = await userModel.findById(_id);
 
     if (!foundUser) {
       throw new Error("User not found!");
