@@ -26,6 +26,21 @@ const validatePostData = (req) => {
   }
 };
 
+const validateUpdatePostData = (req) => {
+  const postDataUserWannaModify = req.body;
+  const ALLOWED_FIELDS_TO_UPDATE = ["title", "content", "tags", "image"];
+
+  const isUpdateAllowed = Object.keys(postDataUserWannaModify).every((key) =>
+    ALLOWED_FIELDS_TO_UPDATE.includes(key)
+  );
+
+  if (!isUpdateAllowed) {
+    throw new Error("Invalid Fields for Update!");
+  }
+};
+
 module.exports = {
   validateSignupData,
+  validatePostData,
+  validateUpdatePostData,
 };
