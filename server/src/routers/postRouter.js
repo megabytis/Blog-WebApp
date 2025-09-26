@@ -76,4 +76,27 @@ postRouter.patch("/post/update/:postID", userAuth, async (req, res, next) => {
   }
 });
 
+postRouter.post("/post/delete/:postID", userAuth, async (req, res, next) => {
+  try {
+    const loggedInUser = req.user;
+    const postID = req.params?.postID;
+
+    const foundPost = await postModel.findById(postID);
+
+    if (foundPost === null) {
+      throw new Error("Post not Found!");
+    }
+
+    if (foundPost.author.toString() !== loggedInUser._id.toString()) {
+      throw new Error("You are not Authorized to Delete the Post!");
+    }
+
+    await postModel.deleteOne({ _id: postID });
+
+    res.json({ message: "Post deleted Successfully!" });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = postRouter;
