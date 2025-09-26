@@ -21,7 +21,7 @@ const validatePostData = (req) => {
     throw new Error("Content not valid!");
   } else if (!validator.isURL(image)) {
     throw new Error("Not a Valid image URL!");
-  } else if (validator.isEmpty(tags)) {
+  } else if (!Array.isArray(tags) || tags.length === 0) {
     throw new Error("Tags shouldn't be empty!");
   }
 };
