@@ -10,6 +10,14 @@ const {
 
 const postRouter = express.Router();
 
+const SAFE_PROPERTIES_TO_DISPLAY = [
+  "title",
+  "content",
+  "image",
+  "likes",
+  "author",
+];
+
 postRouter.post("/post/create", userAuth, async (req, res, next) => {
   try {
     const { title, content, image, tags } = req.body;
@@ -100,36 +108,53 @@ postRouter.post("/post/delete/:postID", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
+postRouter.get("/post/all", userAuth, async (req, res, next) => {
   try {
-    const postID = req.params?.postID;
-    const SAFE_PROPERTIES_TO_DISPLAY = [
-      "title",
-      "content",
-      "image",
-      "likes",
-      "author",
-    ];
+    const page = parseInt(req.query.page) || 1;
 
-    const foundPost = await postModel
-      .findById(postID)
-      .populate("author", "name email");
+    const MAX_LIMIT = 3;
+    let limit = parseInt(req.query.limit) || MAX_LIMIT;
 
-    const postToDisplay = {};
-    SAFE_PROPERTIES_TO_DISPLAY.forEach((key) => {
-      if (foundPost[key] !== undefined) {
-        postToDisplay[key] = foundPost[key];
-      }
-    });
+    const skip = (page - 1) * limit;
 
-    res.json({ message: "post", post: postToDisplay });
+    const totalPosts = await postModel.countDocuments();
+    const totalPages = Math.ceil(totalPosts / limit);
+
+    if (page > totalPages && totalPages > 0) {
+      throw new Error("Page is not Available!🤡");
+    }
+
+    const posts = await postModel
+      .find()
+      .populate("author", "name email")
+      .select(SAFE_PROPERTIES_TO_DISPLAY.join(" "))
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({ message: "post", post: posts });
   } catch (err) {
     next(err);
   }
 });
 
-postRouter.get("/post/all", userAuth, (req, res, next) => {
-  
+postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
+  try {
+    const postID = req.params?.postID;
+
+    const foundPost = await postModel
+      .findById(postID)
+      .populate("author", "name email")
+      .select(SAFE_PROPERTIES_TO_DISPLAY.join(" "));
+
+    if (!foundPost) {
+      throw new Error("Post Not Found!");
+    }
+
+    res.json({ message: "post", post: foundPost });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = postRouter;
