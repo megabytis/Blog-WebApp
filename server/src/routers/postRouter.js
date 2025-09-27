@@ -2,6 +2,7 @@ const express = require("express");
 
 const { userAuth } = require("../middleware/auth");
 const { postModel } = require("../models/posts");
+const { userModel } = require("../models/user");
 const {
   validatePostData,
   validateUpdatePostData,
@@ -97,6 +98,38 @@ postRouter.post("/post/delete/:postID", userAuth, async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
+  try {
+    const postID = req.params?.postID;
+    const SAFE_PROPERTIES_TO_DISPLAY = [
+      "title",
+      "content",
+      "image",
+      "likes",
+      "author",
+    ];
+
+    const foundPost = await postModel
+      .findById(postID)
+      .populate("author", "name email");
+
+    const postToDisplay = {};
+    SAFE_PROPERTIES_TO_DISPLAY.forEach((key) => {
+      if (foundPost[key] !== undefined) {
+        postToDisplay[key] = foundPost[key];
+      }
+    });
+
+    res.json({ message: "post", post: postToDisplay });
+  } catch (err) {
+    next(err);
+  }
+});
+
+postRouter.get("/post/all", userAuth, (req, res, next) => {
+  
 });
 
 module.exports = postRouter;
