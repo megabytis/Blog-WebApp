@@ -110,7 +110,7 @@ postRouter.post("/post/delete/:postID", userAuth, async (req, res, next) => {
 
 postRouter.get("/post/all", userAuth, async (req, res, next) => {
   try {
-    let { page = 1, search, tags, minlikes, author } = req.query;
+    let { page = 1, search, tags, minlikes, authorName, authorID } = req.query;
 
     // PAGINATION
 
@@ -142,10 +142,14 @@ postRouter.get("/post/all", userAuth, async (req, res, next) => {
 
     // Filtering by Author name, minimum likes & tags
 
-    if (author) {
+    if (authorID) {
+      searchQuery.author = authorID;
+    }
+
+    if (authorName) {
       const users = await userModel
         .find({
-          name: { $regex: author, $options: "i" },
+          name: { $regex: authorName, $options: "i" },
         })
         .select("_id");
 
