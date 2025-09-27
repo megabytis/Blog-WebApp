@@ -110,10 +110,15 @@ postRouter.post("/post/delete/:postID", userAuth, async (req, res, next) => {
 
 postRouter.get("/post/all", userAuth, async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1;
+    let { page = 1, search, tags, minlikes, author } = req.query;
+
+    // PAGINATION
+
+    page = parseInt(req.query.page) || 1;
 
     const MAX_LIMIT = 3;
     let limit = parseInt(req.query.limit) || MAX_LIMIT;
+    limit = limit > MAX_LIMIT ? MAX_LIMIT : limit;
 
     const skip = (page - 1) * limit;
 
@@ -124,8 +129,42 @@ postRouter.get("/post/all", userAuth, async (req, res, next) => {
       throw new Error("Page is not Available!🤡");
     }
 
+    // SEARCH Query
+
+    const searchQuery = {};
+
+    if (search) {
+      searchQuery.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Filtering by Author name, minimum likes & tags
+
+    if (author) {
+      const users = await userModel
+        .find({
+          name: { $regex: author, $options: "i" },
+        })
+        .select("_id");
+
+      const userIDs = users.map((user) => user._id);
+
+      searchQuery.author = { $in: userIDs };
+    }
+
+    if (minlikes) {
+      searchQuery.likes = { $gte: parseInt(minlikes) };
+    }
+
+    if (tags) {
+      const tagsArr = tags.split(",");
+      searchQuery.tags = { $in: tagsArr };
+    }
+
     const posts = await postModel
-      .find()
+      .find(searchQuery)
       .populate("author", "name email")
       .select(SAFE_PROPERTIES_TO_DISPLAY.join(" "))
       .sort({ createdAt: -1 })
