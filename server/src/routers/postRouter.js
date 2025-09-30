@@ -18,7 +18,7 @@ const SAFE_PROPERTIES_TO_DISPLAY = [
   "author",
 ];
 
-postRouter.post("/post/create", userAuth, async (req, res, next) => {
+postRouter.post("/posts", userAuth, async (req, res, next) => {
   try {
     const { title, content, image, tags } = req.body;
 
@@ -49,66 +49,7 @@ postRouter.post("/post/create", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.patch("/post/update/:postID", userAuth, async (req, res, next) => {
-  try {
-    const loggedInUser = req.user;
-    const postID = req.params?.postID;
-    const dataUserWannaModify = req.body;
-    const ALLOWED_FIELDS_TO_UPDATE = ["title", "content", "tags", "image"];
-
-    validateUpdatePostData(req);
-
-    const foundPost = await postModel.findById(postID);
-
-    if (foundPost === null) {
-      throw new Error("Post not Found!");
-    }
-
-    if (foundPost.author.toString() !== loggedInUser._id.toString()) {
-      throw new Error("You are not Authorized to Update the Post!");
-    }
-
-    ALLOWED_FIELDS_TO_UPDATE.forEach((field) => {
-      if (field in req.body) {
-        foundPost[field] = req.body[field];
-      }
-    });
-
-    const updatedPost = await foundPost.save();
-
-    res.json({
-      message: `Dear ${loggedInUser.name}, your Post has been updated Successfully!`,
-      data: foundPost,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
-postRouter.delete("/post/:postID", userAuth, async (req, res, next) => {
-  try {
-    const loggedInUser = req.user;
-    const postID = req.params?.postID;
-
-    const foundPost = await postModel.findById(postID);
-
-    if (foundPost === null) {
-      throw new Error("Post not Found!");
-    }
-
-    if (foundPost.author.toString() !== loggedInUser._id.toString()) {
-      throw new Error("You are not Authorized to Delete the Post!");
-    }
-
-    await postModel.deleteOne({ _id: postID });
-
-    res.json({ message: "Post deleted Successfully!" });
-  } catch (err) {
-    next(err);
-  }
-});
-
-postRouter.get("/post/all", userAuth, async (req, res, next) => {
+postRouter.get("/posts", userAuth, async (req, res, next) => {
   try {
     let { page = 1, search, tags, minlikes, authorName, authorID } = req.query;
 
@@ -181,7 +122,7 @@ postRouter.get("/post/all", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
+postRouter.get("/posts/:postID", userAuth, async (req, res, next) => {
   try {
     const postID = req.params?.postID;
 
@@ -200,58 +141,238 @@ postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.patch(
-  "/post/:postID/like/:userID",
+postRouter.patch("/posts/:postID", userAuth, async (req, res, next) => {
+  try {
+    const loggedInUser = req.user;
+    const postID = req.params?.postID;
+    const dataUserWannaModify = req.body;
+    const ALLOWED_FIELDS_TO_UPDATE = ["title", "content", "tags", "image"];
+
+    validateUpdatePostData(req);
+
+    const foundPost = await postModel.findById(postID);
+
+    if (foundPost === null) {
+      throw new Error("Post not Found!");
+    }
+
+    if (foundPost.author.toString() !== loggedInUser._id.toString()) {
+      throw new Error("You are not Authorized to Update the Post!");
+    }
+
+    ALLOWED_FIELDS_TO_UPDATE.forEach((field) => {
+      if (field in req.body) {
+        foundPost[field] = req.body[field];
+      }
+    });
+
+    const updatedPost = await foundPost.save();
+
+    res.json({
+      message: `Dear ${loggedInUser.name}, your Post has been updated Successfully!`,
+      data: foundPost,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+postRouter.delete("/posts/:postID", userAuth, async (req, res, next) => {
+  try {
+    const loggedInUser = req.user;
+    const postID = req.params?.postID;
+
+    const foundPost = await postModel.findById(postID);
+
+    if (foundPost === null) {
+      throw new Error("Post not Found!");
+    }
+
+    if (foundPost.author.toString() !== loggedInUser._id.toString()) {
+      throw new Error("You are not Authorized to Delete the Post!");
+    }
+
+    await postModel.deleteOne({ _id: postID });
+
+    res.json({ message: "Post deleted Successfully!" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// #########
+// COMMENTS
+// #########
+
+postRouter.post("/posts/:postID/comments", userAuth, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const { postID } = req.params;
+    const comments = req.body.comments;
+
+    if (comments.length === 0) {
+      throw new Error("Comment can't be Empty!");
+    }
+
+    if (postID.length === 0) {
+      throw new Error("Invalid postID !");
+    }
+
+    const foundPost = await postModel
+      .findByIdAndUpdate(
+        postID,
+        {
+          $push: {
+            comments: {
+              user: user._id,
+              text: comments,
+            },
+          },
+        },
+        { new: true }
+      )
+      .populate("comments.user", "name email");
+
+    if (!foundPost) {
+      throw new Error("Post not found!");
+    }
+
+    res.json({
+      message: `${user.name} commented on Post!`,
+      data: foundPost.comments,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+postRouter.get("/posts/:postID/comments", userAuth, async (req, res, next) => {
+  try {
+    const postID = req.params.postID;
+
+    if (!postID) {
+      throw new Error("Invalid Post ID!");
+    }
+
+    const page = parseInt(req.query.page) || 1;
+
+    const MAX_LIMIT = 3;
+    let limit = parseInt(req.query.limit) || MAX_LIMIT;
+    limit = limit > MAX_LIMIT ? MAX_LIMIT : limit;
+
+    const skip = (page - 1) * limit;
+
+    const foundPost = await postModel.findById(postID).select("comments");
+
+    if (!foundPost) {
+      throw new Error("Post not Found!");
+    }
+
+    const totalComments = foundPost.comments.length;
+    const totalPages = Math.ceil(totalComments / limit);
+
+    const paginatedComments = foundPost.comments.slice(skip, skip + limit);
+
+    res.json({
+      message: "Comments",
+      data: paginatedComments,
+      pagination: {
+        page,
+        limit,
+        totalComments,
+        totalPages,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+postRouter.delete(
+  "/posts/:postID/comments/:commentID",
   userAuth,
   async (req, res, next) => {
     try {
-      const user = req.user;
-      const { userID, postID } = req.params;
+      const { postID, commentID } = req.params;
+      const loggedInUser = req.user;
 
-      if (userID.length === 0 || postID.length === 0) {
-        throw new Error("Invalid userID or postID !");
+      const post = await postModel.findById(postID);
+      if (!post) {
+        throw new Error("Post not Found!");
       }
 
-      if (user._id.toString() !== userID.toString()) {
-        throw new Error("Invalid userID!");
+      const foundComment = post.comments.find(
+        (c) => c._id.toString() === commentID.toString()
+      );
+      if (!foundComment) {
+        throw new Error("Comment Not found!");
       }
 
-      const foundPost = await postModel.findById(postID);
-
-      if (!foundPost) {
-        throw new Error("Post not found!");
+      if (foundComment.user.toString() !== loggedInUser._id.toString()) {
+        throw new Error("User not Authorized!");
       }
 
-      let alreadyLiked = false;
+      post.comments = post.comments.filter(
+        (comment) => comment._id.toString() !== commentID.toString()
+      );
 
-      for (id of foundPost.likes) {
-        if (id.toString() === userID.toString()) {
-          alreadyLiked = true;
-          break;
-        }
-      }
+      await post.save();
 
-      const updatedPost = await postModel
-        .findByIdAndUpdate(
-          postID,
-          alreadyLiked
-            ? { $pull: { likes: userID } }
-            : { $push: { likes: userID } },
-          { new: true }
-        )
-        .populate("likes", "name email");
-
-      const resMessage = alreadyLiked ? "disliked" : "liked";
-
-      res.json({
-        message: `${user.name} ${resMessage} the post!`,
-        data: updatedPost,
-      });
+      res.json({ message: "Comment Deleted!", data: post.comments });
     } catch (err) {
       next(err);
     }
   }
 );
+
+// ######
+// LIKES
+// ######
+
+postRouter.patch("/post/:postID/like", userAuth, async (req, res, next) => {
+  try {
+    const user = req.user;
+    const { postID } = req.params;
+
+    if (postID.length === 0) {
+      throw new Error("Invalid postID !");
+    }
+
+    const foundPost = await postModel.findById(postID);
+
+    if (!foundPost) {
+      throw new Error("Post not found!");
+    }
+
+    let alreadyLiked = false;
+
+    for (id of foundPost.likes) {
+      if (id.toString() === userID.toString()) {
+        alreadyLiked = true;
+        break;
+      }
+    }
+
+    const updatedPost = await postModel
+      .findByIdAndUpdate(
+        postID,
+        alreadyLiked
+          ? { $pull: { likes: user._id } }
+          : { $push: { likes: user._id } },
+        { new: true }
+      )
+      .populate("likes", "name email");
+
+    const resMessage = alreadyLiked ? "disliked" : "liked";
+
+    res.json({
+      message: `${user.name} ${resMessage} the post!`,
+      data: updatedPost,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 postRouter.get(
   "/post/:postID/likes/count",
