@@ -336,7 +336,7 @@ postRouter.delete(
 // LIKES
 // ######
 
-postRouter.patch("/post/:postID/like", userAuth, async (req, res, next) => {
+postRouter.patch("/posts/:postID/like", userAuth, async (req, res, next) => {
   try {
     const user = req.user;
     const { postID } = req.params;
@@ -382,7 +382,7 @@ postRouter.patch("/post/:postID/like", userAuth, async (req, res, next) => {
 });
 
 postRouter.get(
-  "/post/:postID/likes/count",
+  "/posts/:postID/likes/count",
   userAuth,
   async (req, res, next) => {
     try {
