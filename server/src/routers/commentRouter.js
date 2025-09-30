@@ -6,15 +6,15 @@ const { postModel } = require("../models/posts");
 const commentRouter = express.Router();
 
 commentRouter.post(
-  "/comment/:userID/:postID",
+  "/comments/:userID/:postID",
   userAuth,
   async (req, res, next) => {
     try {
       const user = req.user;
       const { userID, postID } = req.params;
-      const comment = req.body.comment;
+      const comments = req.body.comments;
 
-      if (comment.length === 0) {
+      if (comments.length === 0) {
         throw new Error("Comment can't be Empty!");
       }
 
@@ -33,13 +33,13 @@ commentRouter.post(
             $push: {
               comments: {
                 user: userID,
-                text: comment,
+                text: comments,
               },
             },
           },
           { new: true }
         )
-        .populate("comment.user", "name email");
+        .populate("comments.user", "name email");
 
       if (!foundPost) {
         throw new Error("Post not found!");
@@ -54,5 +54,47 @@ commentRouter.post(
     }
   }
 );
+
+commentRouter.get("/comments/:postID", userAuth, async (req, res, next) => {
+  try {
+    const postID = req.params.postID;
+
+    if (!postID) {
+      throw new Error("Invalid Post ID!");
+    }
+
+    const page = parseInt(req.query.page) || 1;
+
+    const MAX_LIMIT = 3;
+    let limit = parseInt(req.query.limit) || MAX_LIMIT;
+    limit = limit > MAX_LIMIT ? MAX_LIMIT : limit;
+
+    const skip = (page - 1) * limit;
+
+    const foundPost = await postModel.findById(postID).select("comments");
+
+    if (!foundPost) {
+      throw new Error("Post not Found!");
+    }
+
+    const totalComments = foundPost.comments.length;
+    const totalPages = Math.ceil(totalComments / limit);
+
+    const paginatedComments = foundPost.comments.slice(skip, skip + limit);
+
+    res.json({
+      message: "Comments",
+      data: paginatedComments,
+      pagination: {
+        page,
+        limit,
+        totalComments,
+        totalPages,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = commentRouter;
