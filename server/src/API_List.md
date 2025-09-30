@@ -4,28 +4,21 @@
 2. POST /auth/login
 3. POST /auth/logout
 
-# post
+# Posts
 
-4. POST /post/create
-5. PATCH /post/update/:postID
-6. DELETE /post/:postID
+4. POST /posts
+5. GET /posts?page=1&limit=10&search=js&tags=node,express
+6. GET /posts/:postID
+7. PATCH /posts/:postID
+8. DELETE /posts/:postID
 
-7. GET /post/all? (includes pagination, filter & search)
-   e.g: GET /post/all?page=1&limit=10&search=js&tags=node,express
+# comments
 
-**Features:**
-Pagination: page, limit.
-Search: match title or content with regex.
-Filter: filter by tags.
-Sort: newest first (default).
+9. POST /posts/:postID/comments
+10. GET /posts/:postID/comments?page=1&limit=3
+11. DELETE /posts/:postID/comments/:commentID
 
-8. GET /post/:postID
+# Likes
 
-9. PATCH /post/:postID/like/:userID (If a user already liked → remove like, If not → add like.)
-10. GET /post/:postID/likes/count
-
-# comment
-
-11. POST /comment/:userID/:postID
-12. GET /comment/:postID?page=1&limit=3 (i.e. displaying comments of a specific post with pagination)
-13. DELETE /comments/:postID/deletecomments/:commentID (can be done by comment's author only)
+12. POST /posts/:postID/like
+13. GET /posts/:postID/likes/count
