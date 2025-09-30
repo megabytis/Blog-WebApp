@@ -200,53 +200,76 @@ postRouter.get("/post/:postID", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.patch("/post/:postID/like/:userID", userAuth, async (req, res, next) => {
-  try {
-    const user = req.user;
-    const { userID, postID } = req.params;
+postRouter.patch(
+  "/post/:postID/like/:userID",
+  userAuth,
+  async (req, res, next) => {
+    try {
+      const user = req.user;
+      const { userID, postID } = req.params;
 
-    if (userID.length === 0 || postID.length === 0) {
-      throw new Error("Invalid userID or postID !");
-    }
-
-    if (user._id.toString() !== userID.toString()) {
-      throw new Error("Invalid userID!");
-    }
-
-    const foundPost = await postModel.findById(postID);
-
-    if (!foundPost) {
-      throw new Error("Post not found!");
-    }
-
-    let alreadyLiked = false;
-
-    for (id of foundPost.likes) {
-      if (id.toString() === userID.toString()) {
-        alreadyLiked = true;
-        break;
+      if (userID.length === 0 || postID.length === 0) {
+        throw new Error("Invalid userID or postID !");
       }
+
+      if (user._id.toString() !== userID.toString()) {
+        throw new Error("Invalid userID!");
+      }
+
+      const foundPost = await postModel.findById(postID);
+
+      if (!foundPost) {
+        throw new Error("Post not found!");
+      }
+
+      let alreadyLiked = false;
+
+      for (id of foundPost.likes) {
+        if (id.toString() === userID.toString()) {
+          alreadyLiked = true;
+          break;
+        }
+      }
+
+      const updatedPost = await postModel
+        .findByIdAndUpdate(
+          postID,
+          alreadyLiked
+            ? { $pull: { likes: userID } }
+            : { $push: { likes: userID } },
+          { new: true }
+        )
+        .populate("likes", "name email");
+
+      const resMessage = alreadyLiked ? "disliked" : "liked";
+
+      res.json({
+        message: `${user.name} ${resMessage} the post!`,
+        data: updatedPost,
+      });
+    } catch (err) {
+      next(err);
     }
-
-    const updatedPost = await postModel
-      .findByIdAndUpdate(
-        postID,
-        alreadyLiked
-          ? { $pull: { likes: userID } }
-          : { $push: { likes: userID } },
-        { new: true }
-      )
-      .populate("likes", "name email");
-
-    const resMessage = alreadyLiked ? "disliked" : "liked";
-
-    res.json({
-      message: `${user.name} ${resMessage} the post!`,
-      data: updatedPost,
-    });
-  } catch (err) {
-    next(err);
   }
-});
+);
+
+postRouter.get(
+  "/post/:postID/likes/count",
+  userAuth,
+  async (req, res, next) => {
+    try {
+      const { postID } = req.params;
+
+      const foundPost = await postModel.findById(postID);
+      if (!foundPost) {
+        throw new Error("Post not found!");
+      }
+
+      res.json({ message: `Post has ${foundPost.likes.length} likes 🥰` });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 module.exports = postRouter;
