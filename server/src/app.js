@@ -5,7 +5,6 @@ const { connectDB } = require("./config/database");
 
 const authRouter = require("./routers/authRouter");
 const postRouter = require("./routers/postRouter");
-const commentRouter = require("./routers/commentRouter");
 
 const app = express();
 app.use(express.json());
