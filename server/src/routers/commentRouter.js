@@ -97,4 +97,41 @@ commentRouter.get("/comments/:postID", userAuth, async (req, res, next) => {
   }
 });
 
+commentRouter.delete(
+  "/comments/:postID/deletecomments/:commentID",
+  userAuth,
+  async (req, res, next) => {
+    try {
+      const { postID, commentID } = req.params;
+      const loggedInUser = req.user;
+
+      const post = await postModel.findById(postID);
+      if (!post) {
+        throw new Error("Post not Found!");
+      }
+
+      const foundComment = post.comments.find(
+        (c) => c._id.toString() === commentID.toString()
+      );
+      if (!foundComment) {
+        throw new Error("Comment Not found!");
+      }
+
+      if (foundComment.user.toString() !== loggedInUser._id.toString()) {
+        throw new Error("User not Authorized!");
+      }
+
+      post.comments = post.comments.filter(
+        (comment) => comment._id.toString() !== commentID.toString()
+      );
+
+      await post.save();
+
+      res.json({ message: "Comment Deleted!", data: post.comments });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 module.exports = commentRouter;
