@@ -55,7 +55,7 @@ postRouter.post("/posts", userAuth, async (req, res, next) => {
 
 postRouter.get("/posts", userAuth, async (req, res, next) => {
   try {
-    let { page = 1, search, tags, minlikes, authorName, authorID } = req.query;
+    let { page = 1, search, tags, minlikes, author, authorID } = req.query;
 
     // PAGINATION
 
@@ -91,10 +91,10 @@ postRouter.get("/posts", userAuth, async (req, res, next) => {
       searchQuery.author = authorID;
     }
 
-    if (authorName) {
+    if (author) {
       const users = await userModel
         .find({
-          name: { $regex: authorName, $options: "i" },
+          name: { $regex: author, $options: "i" },
         })
         .select("_id");
 
@@ -104,7 +104,11 @@ postRouter.get("/posts", userAuth, async (req, res, next) => {
     }
 
     if (minlikes) {
-      searchQuery.likes = { $gte: parseInt(minlikes) };
+      const minlikesInt = parseInt(minlikes, 10);
+
+      if (!isNaN(minlikesInt) && minlikesInt >= 0) {
+        searchQuery.likesCount = { $gte: parseInt(minlikesInt) };
+      }
     }
 
     if (tags) {
@@ -350,7 +354,7 @@ postRouter.patch("/post/:postID/like", userAuth, async (req, res, next) => {
     let alreadyLiked = false;
 
     for (id of foundPost.likes) {
-      if (id.toString() === userID.toString()) {
+      if (id.toString() === user._id.toString()) {
         alreadyLiked = true;
         break;
       }
@@ -360,8 +364,8 @@ postRouter.patch("/post/:postID/like", userAuth, async (req, res, next) => {
       .findByIdAndUpdate(
         postID,
         alreadyLiked
-          ? { $pull: { likes: user._id } }
-          : { $push: { likes: user._id } },
+          ? { $pull: { likes: user._id }, $inc: { likesCount: -1 } }
+          : { $push: { likes: user._id }, $inc: { likesCount: 1 } },
         { new: true }
       )
       .populate("likes", "name email");
@@ -389,7 +393,7 @@ postRouter.get(
         throw new Error("Post not found!");
       }
 
-      res.json({ message: `Post has ${foundPost.likes.length} likes 🥰` });
+      res.json({ message: `Post has ${foundPost.likesCount} likes 🥰` });
     } catch (err) {
       next(err);
     }
