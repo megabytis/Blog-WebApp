@@ -18,6 +18,10 @@ const SAFE_PROPERTIES_TO_DISPLAY = [
   "author",
 ];
 
+// ######
+// POSTS
+// ######
+
 postRouter.post("/posts", userAuth, async (req, res, next) => {
   try {
     const { title, content, image, tags } = req.body;
@@ -145,7 +149,6 @@ postRouter.patch("/posts/:postID", userAuth, async (req, res, next) => {
   try {
     const loggedInUser = req.user;
     const postID = req.params?.postID;
-    const dataUserWannaModify = req.body;
     const ALLOWED_FIELDS_TO_UPDATE = ["title", "content", "tags", "image"];
 
     validateUpdatePostData(req);

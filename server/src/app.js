@@ -13,7 +13,6 @@ app.use(cookieParser());
 
 app.use("/", authRouter);
 app.use("/", postRouter);
-app.use("/", commentRouter);
 
 // Global ERRROR HANDLER
 app.use((err, req, res, next) => {
