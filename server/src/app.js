@@ -54,6 +54,19 @@ app.use((req, res, next) => {
   next();
 });
 
+// --- Health check (BEFORE other routes) ---
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    cors: "enabled",
+    allowedOrigins: allowedOrigins,
+  });
+});
+
+// --- Root endpoint ---
+app.get("/", (req, res) => res.send("Blog API is running"));
+
 // --- Routes ---
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
@@ -64,16 +77,11 @@ connectDB()
   .then(() => console.log("Database connected"))
   .catch((err) => console.error("DB connection error:", err));
 
-// --- Root endpoint ---
-app.get("/", (req, res) => res.send("Blog API is running"));
-
-// --- Health check ---
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    cors: "enabled",
-    allowedOrigins: allowedOrigins,
+// --- 404 Handler (AFTER all routes) ---
+app.use("*", (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: `Route not found: ${req.originalUrl}`,
   });
 });
 
