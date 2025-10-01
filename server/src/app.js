@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: "https://blog-web-app-4vtc.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    credentials: true,
+    // credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );

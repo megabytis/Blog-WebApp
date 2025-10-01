@@ -578,6 +578,7 @@
         const data = await fetchJSON("/auth/login", {
           method: "POST",
           body: { email, password },
+          credentials: "include",
         });
         const token = data.token || data.accessToken || data.jwt || "";
         if (!token) throw new Error("Missing token in response");
