@@ -6,7 +6,7 @@ const API_BASE =
 
 const api = axios.create({
   baseURL: API_BASE,
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 // const API_BASE = "https://blog-webapp-alzm.onrender.com";
