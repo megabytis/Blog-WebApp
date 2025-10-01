@@ -2,7 +2,7 @@
 
 import type { AuthResponse } from "./types";
 
-export const API_BASE_URL = "/api/proxy"; // now all frontend requests go through Vercel proxy
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export function qs(params: Record<string, any>) {
   const search = new URLSearchParams();
