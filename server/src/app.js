@@ -37,57 +37,13 @@ app.use(
   })
 );
 
-// Handle preflight requests for all routes
-app.options("*", cors());
-
-// --- Middleware ---
 app.use(express.json());
 app.use(cookieParser());
 
-// Add request logging middleware
-app.use((req, res, next) => {
-  console.log(
-    `${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${
-      req.headers.origin
-    }`
-  );
-  next();
-});
-
-// --- Health check (BEFORE other routes) ---
-app.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    cors: "enabled",
-    allowedOrigins: allowedOrigins,
-  });
-});
-
-// --- Root endpoint ---
-app.get("/", (req, res) => res.send("Blog API is running"));
-
-// --- Routes ---
 app.use("/auth", authRouter);
 app.use("/posts", postRouter);
 
-// --- DB connection ---
 const { connectDB } = require("./config/database");
 connectDB()
   .then(() => console.log("Database connected"))
   .catch((err) => console.error("DB connection error:", err));
-
-// --- 404 Handler (AFTER all routes) ---
-app.use("*", (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.originalUrl}`,
-  });
-});
-
-// --- Start server ---
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`CORS enabled for: ${allowedOrigins.join(", ")}`);
-  console.log(`Health check available at: http://0.0.0.0:${PORT}/health`);
-});
