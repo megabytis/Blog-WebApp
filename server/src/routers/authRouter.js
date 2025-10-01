@@ -7,6 +7,15 @@ const { userModel } = require("../models/user");
 
 const authRouter = express.Router();
 
+// Handle OPTIONS preflight for ALL auth routes
+authRouter.options("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://blog-web-app-eight-olive.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.status(200).end();
+});
+
 authRouter.post("/auth/signup", async (req, res, next) => {
   try {
     const { name, email, password, bio } = req.body;
