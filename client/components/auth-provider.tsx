@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await apiFetch<AuthResponse>("/auth/signup", {
       method: "POST",
       json: { username, email, password },
-      credentials: "include",
+      // credentials: "include",
     });
     setAuth(data);
     setUser(data.user);
