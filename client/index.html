@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Blog — Vanilla Frontend</title>
+    <meta name="description" content="Simple blog frontend using vanilla JS" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="/placeholder-logo.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app">Skip to content</a>
+
+    <header class="site-header">
+      <div class="container header-content">
+        <a class="brand" href="#/">
+          <img
+            src="/placeholder-logo.svg"
+            alt=""
+            class="brand-logo"
+            width="28"
+            height="28"
+          />
+          <span class="brand-text">Vanilla Blog</span>
+        </a>
+
+        <nav class="nav" aria-label="Primary">
+          <a class="nav-link" href="#/">Home</a>
+          <a class="nav-link auth-only" id="nav-new-post" href="#/new"
+            >New Post</a
+          >
+          <span class="nav-divider" aria-hidden="true"></span>
+          <a class="nav-link anon-only" id="nav-login" href="#/login">Login</a>
+          <a class="nav-link anon-only" id="nav-signup" href="#/signup"
+            >Sign up</a
+          >
+          <button
+            class="nav-link auth-only btn-link"
+            id="nav-logout"
+            type="button"
+            aria-label="Log out"
+          >
+            Logout
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <main
+      id="app"
+      class="container"
+      tabindex="-1"
+      aria-live="polite"
+      aria-busy="false"
+    >
+      Content rendered by app.js
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p class="muted">
+          © <span id="year"></span> Vanilla Blog. Built with plain HTML, CSS,
+          and JS.
+        </p>
+      </div>
+    </footer>
+
+    <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
