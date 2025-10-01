@@ -19,15 +19,6 @@ app.use(
   })
 );
 
-// Handle preflight manually (if needed)
-app.options(
-  "*",
-  cors({
-    origin: ["https://blog-webapp-ui.onrender.com"],
-    credentials: true,
-  })
-);
-
 app.use(express.json());
 app.use(cookieParser());
 
