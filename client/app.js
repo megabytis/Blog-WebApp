@@ -50,9 +50,6 @@
       };
       console.log("🔍 Auth token:", storage.getToken());
 
-      if (auth && storage.getToken())
-        h["Authorization"] = `Bearer ${storage.getToken()}`;
-
       const res = await fetch(url, {
         method,
         headers: h,
