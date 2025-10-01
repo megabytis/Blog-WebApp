@@ -9,27 +9,27 @@ const postRouter = require("./routers/postRouter");
 
 // --- Config ---
 const app = express();
-const PORT = process.env.PORT || 3000; // Use Render's assigned port
+const PORT = process.env.PORT || 3000;
 
 // Enhanced CORS configuration
 const allowedOrigins = [
   "https://blog-web-app-eight-olive.vercel.app",
-  "https://blog-web-app-eight-olive.vercel.app",
   "http://localhost:3000",
 ];
 
+// CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("Blocked by CORS:", origin);
+        return callback(new Error("Not allowed by CORS"), false);
       }
-      return callback(null, true);
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -37,12 +37,22 @@ app.use(
   })
 );
 
-// Handle preflight requests
+// Handle preflight requests for all routes
 app.options("*", cors());
 
 // --- Middleware ---
 app.use(express.json());
 app.use(cookieParser());
+
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(
+    `${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${
+      req.headers.origin
+    }`
+  );
+  next();
+});
 
 // --- Routes ---
 app.use("/auth", authRouter);
@@ -63,12 +73,13 @@ app.get("/health", (req, res) => {
     status: "OK",
     timestamp: new Date().toISOString(),
     cors: "enabled",
+    allowedOrigins: allowedOrigins,
   });
 });
 
 // --- Start server ---
 app.listen(PORT, "0.0.0.0", () => {
-  // Listen on all interfaces
   console.log(`Server running on port ${PORT}`);
   console.log(`CORS enabled for: ${allowedOrigins.join(", ")}`);
+  console.log(`Health check available at: http://0.0.0.0:${PORT}/health`);
 });
