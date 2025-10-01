@@ -11,19 +11,30 @@ const app = express();
 // CORS middleware
 app.use(
   cors({
-    origin: ["https://blog-web-app-eight-olive.vercel.app"],
-    credentials: true,
+    origin: [
+      "https://blog-web-app-eight-olive.vercel.app",
+      "http://localhost:5173", // ← Add this for development
+      "http://localhost:3000", // ← And this if needed
+    ],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+    credentials: true,
   })
 );
 
 // Handle preflight requests
+// Handle preflight requests - FIXED VERSION
 app.options("*", (req, res) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://blog-web-app-eight-olive.vercel.app"
-  );
+  const allowedOrigins = [
+    "https://blog-web-app-eight-olive.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
   res.header(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, PATCH, OPTIONS"
