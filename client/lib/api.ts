@@ -52,6 +52,8 @@ export async function apiFetch<T = any>(
 
   const url = `${API_BASE_URL}${path}`;
 
+  console.log("Fetching from:", url, "with credentials:", options.credentials);
+
   const headers: HeadersInit = {
     Accept: "application/json",
     ...(options.json ? { "Content-Type": "application/json" } : {}),
