@@ -1,7 +1,7 @@
 /* add vanilla JS SPA with routing and API integration */
 
 (() => {
-  const API_BASE = "https://blog-webapp-alzm.onrender.com";
+  const API_BASE = "https://blog-webapp-alzm.onrender.com/";
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
