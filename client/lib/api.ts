@@ -2,10 +2,6 @@
 
 import type { AuthResponse } from "./types";
 
-export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"; // fallback for dev
-
-// Utility to build query strings
 export function qs(params: Record<string, any>) {
   const search = new URLSearchParams();
   Object.entries(params).forEach(([k, v]) => {
@@ -19,7 +15,6 @@ export function qs(params: Record<string, any>) {
 const TOKEN_KEY = "blog_jwt_token";
 const USER_KEY = "blog_user";
 
-// LocalStorage token helpers
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
   return localStorage.getItem(TOKEN_KEY);
@@ -43,12 +38,12 @@ export function getStoredUser() {
 
 type ApiOptions = RequestInit & { json?: any };
 
-// Main API fetcher
 export async function apiFetch<T = any>(
   path: string,
   options: ApiOptions = {}
 ) {
-  const url = `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  // Hit the Vercel proxy route instead of Render directly
+  const url = `/api/proxy${path.startsWith("/") ? path : `/${path}`}`;
 
   const headers: HeadersInit = {
     Accept: "application/json",
@@ -62,8 +57,9 @@ export async function apiFetch<T = any>(
   const res = await fetch(url, {
     ...options,
     headers,
+    // include credentials if you want cookies to flow
+    credentials: "include",
     body: options.json ? JSON.stringify(options.json) : options.body,
-    credentials: "include", // ✅ important for cookies
   });
 
   const contentType = res.headers.get("content-type") || "";
@@ -76,9 +72,8 @@ export async function apiFetch<T = any>(
       : String(data);
     throw new Error(message);
   }
-
   return data as T;
 }
 
-// For SWR hooks
+// For SWR or other fetchers
 export const swrFetcher = (path: string) => apiFetch(path);
