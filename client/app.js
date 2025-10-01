@@ -24,7 +24,7 @@
       localStorage.setItem("auth_user", JSON.stringify(u || null)),
     clearUser: () => localStorage.removeItem("auth_user"),
   };
-  const isAuthed = () => !!storage.getToken();
+  // const isAuthed = () => !!storage.getToken();
 
   function updateNav() {
     const authed = isAuthed();
@@ -45,7 +45,7 @@
         "Content-Type": "application/json",
         ...headers,
       };
-      console.log("🔍 Auth token:", storage.getToken());
+      // console.log("🔍 Auth token:", storage.getToken());
 
       const res = await fetch(url, {
         method,
