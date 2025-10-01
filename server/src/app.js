@@ -11,12 +11,25 @@ const app = express();
 
 require("dotenv").config();
 
+const FRONTEND_URL = "https://blog-web-app-eight-olive.vercel.app";
+
 app.use(
   cors({
-    origin: "https://blog-web-app-eight-olive.vercel.app",
+    origin: FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-    // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
+
+// This explicitly handles preflight OPTIONS requests
+app.options(
+  "*",
+  cors({
+    origin: FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
