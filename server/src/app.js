@@ -1,21 +1,24 @@
+// index.js
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
+require("dotenv").config();
 
-const { connectDB } = require("./config/database");
-
+// Import your routers
 const authRouter = require("./routers/authRouter");
 const postRouter = require("./routers/postRouter");
 
+// --- Config ---
 const app = express();
+const PORT = process.env.PORT || 5000;
+const FRONTEND_URL = "https://blog-web-app-eight-olive.vercel.app"; // exact frontend URL
 
-require("dotenv").config();
-
-const allowedOrigins = ["https://blog-web-app-eight-olive.vercel.app"];
+// --- CORS setup ---
+const allowedOrigins = [FRONTEND_URL];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin) return callback(null, true); // allow server-to-server or Postman
+    if (!origin) return callback(null, true); // allow server-to-server (Postman)
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -24,28 +27,30 @@ const corsOptions = {
   },
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
+  credentials: true, // allow cookies
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("*", cors(corsOptions)); // handle preflight
 
+// --- Middleware ---
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/", authRouter);
-app.use("/", postRouter);
+// --- Routes ---
+app.use("/auth", authRouter);
+app.use("/posts", postRouter);
 
-// Global ERRROR HANDLER
-app.use((err, req, res, next) => {
-  res
-    .status(err.statusCode || 500)
-    .json({ success: false, message: `ERROR: ${err.message}` });
-});
-
+// --- DB connection (example) ---
+const { connectDB } = require("./config/database");
 connectDB()
-  .then(() => console.log("MongoDB connected"))
-  .then(() => {
-    app.listen(3000, () => console.log("Server is running"));
-  })
-  .catch((err) => console.error(err));
+  .then(() => console.log("Database connected"))
+  .catch((err) => console.error("DB connection error:", err));
+
+// --- Root endpoint ---
+app.get("/", (req, res) => res.send("Blog API is running"));
+
+// --- Start server ---
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
