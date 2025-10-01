@@ -23,6 +23,16 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+// Add this before your routers
+app.get("/health", (req, res) => {
+  res.json({
+    status: "OK",
+    timestamp: new Date().toISOString(),
+    database:
+      mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+  });
+});
+
 // ✅ Router prefixes
 app.use("/", authRouter);
 app.use("/", postRouter);
