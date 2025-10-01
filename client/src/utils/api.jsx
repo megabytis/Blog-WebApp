@@ -1,11 +1,20 @@
 import axios from "axios";
 
-const API_BASE = "https://blog-webapp-alzm.onrender.com";
+// TEMPORARY FIX - Use CORS proxy
+const API_BASE =
+  "https://cors-anywhere.herokuapp.com/https://blog-webapp-alzm.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE,
   withCredentials: true,
 });
+
+// const API_BASE = "https://blog-webapp-alzm.onrender.com";
+
+// const api = axios.create({
+//   baseURL: API_BASE,
+//   withCredentials: true,
+// });
 
 // Add token to requests
 api.interceptors.request.use((config) => {
