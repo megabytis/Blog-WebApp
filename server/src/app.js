@@ -13,10 +13,18 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: "https://blog-webapp-ui.onrender.com",
+    origin: ["https://blog-webapp-ui.onrender.com"], // array, not string
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Handle preflight manually (if needed)
+app.options(
+  "*",
+  cors({
+    origin: ["https://blog-webapp-ui.onrender.com"],
+    credentials: true,
   })
 );
 
