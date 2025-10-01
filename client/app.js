@@ -52,6 +52,7 @@
       method,
       headers: h,
       body: body ? JSON.stringify(body) : undefined,
+      credentials: "include",
     });
 
     const contentType = res.headers.get("content-type") || "";
@@ -384,6 +385,7 @@
           method: "POST",
           auth: true,
           body: { body },
+          credentials: "include",
         });
         $("#commentBody").value = "";
         cPage = 1;
@@ -620,6 +622,7 @@
         const data = await fetchJSON("/auth/signup", {
           method: "POST",
           body: { email, password },
+          credentials: "include",
         });
         // If API logs in on signup, capture token, else redirect to login
         const token = data.token || data.accessToken || "";
@@ -690,6 +693,7 @@
           method: "POST",
           auth: true,
           body: { title, content, tags },
+          credentials: "include",
         });
         const id = data.id || data._id || data.postId || data.postID;
         toast("Post created", "ok");
@@ -772,6 +776,7 @@
             method: "PATCH",
             auth: true,
             body: { title, content, tags },
+            credentials: "include",
           });
           toast("Post updated", "ok");
           toHash(`#/post/${id}`);
