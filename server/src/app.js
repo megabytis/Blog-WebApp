@@ -36,8 +36,8 @@ app.options("*", (req, res) => {
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/auth", authRouter);
-app.use("/posts", postRouter);
+app.use("/", authRouter);
+app.use("/", postRouter);
 
 const { connectDB } = require("./config/database");
 connectDB()
