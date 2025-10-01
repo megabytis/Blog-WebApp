@@ -1,56 +1,44 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-require("dotenv").config();
+const cors = require("cors");
+
+const { connectDB } = require("./config/database");
 
 const authRouter = require("./routers/authRouter");
 const postRouter = require("./routers/postRouter");
 
 const app = express();
 
-// NUCLEAR CORS FIX - Remove cors package, do it manually
-app.use((req, res, next) => {
-  // Allow all origins for now (you can restrict later)
-  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
+require("dotenv").config();
 
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    console.log("OPTIONS preflight handled for:", req.path);
-    return res.status(200).end();
-  }
-
-  console.log(`${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
-});
+app.use(
+  cors({
+    origin: ["https://dev-tinder-web-app-six.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+    // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Test endpoint
-app.get("/test", (req, res) => {
-  res.json({
-    message: "CORS is working!",
-    origin: req.headers.origin,
-    timestamp: new Date().toISOString(),
-  });
+// ✅ Router prefixes
+app.use("/", authRouter);
+app.use("/", postRouter);
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error("🔥 Error middleware:", err.message);
+  res.status(err.statusCode || 500).json({ message: `ERROR: ${err.message}` });
 });
 
-app.use("/auth", authRouter);
-app.use("/posts", postRouter);
-
-const { connectDB } = require("./config/database");
+// DB + start server
 connectDB()
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.error("DB connection error:", err));
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log("Server running with nuclear CORS fix");
-});
+  .then(() => {
+    console.log("✅ DB connected to app");
+    app.listen(8080, () => {
+      console.log("🚀 App is listening on port 8080");
+    });
+  })
+  .catch((err) => console.log("DB connection error:", err));
