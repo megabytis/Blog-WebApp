@@ -40,32 +40,49 @@
     path,
     { method = "GET", body, headers = {}, auth = false } = {}
   ) {
-    const url = `${API_BASE}${path}`;
-    const h = {
-      "Content-Type": "application/json",
-      ...headers,
-    };
-    if (auth && storage.getToken())
-      h["Authorization"] = `Bearer ${storage.getToken()}`;
+    try {
+      console.log("🔍 Making request to:", `${API_BASE}${path}`);
 
-    const res = await fetch(url, {
-      method,
-      headers: h,
-      body: body ? JSON.stringify(body) : undefined,
-      credentials: "include",
-    });
+      const url = `${API_BASE}${path}`;
+      const h = {
+        "Content-Type": "application/json",
+        ...headers,
+      };
+      console.log("🔍 Auth token:", storage.getToken());
 
-    const contentType = res.headers.get("content-type") || "";
-    const isJSON = contentType.includes("application/json");
-    const data = isJSON ? await res.json().catch(() => ({})) : await res.text();
+      if (auth && storage.getToken())
+        h["Authorization"] = `Bearer ${storage.getToken()}`;
 
-    if (!res.ok) {
-      const msg =
-        (data && data.message) ||
-        (typeof data === "string" ? data : "Request failed");
-      throw new Error(msg);
+      const res = await fetch(url, {
+        method,
+        headers: h,
+        body: body ? JSON.stringify(body) : undefined,
+        credentials: "include",
+      });
+
+      console.log("🔍 Response status:", res.status);
+      console.log(
+        "🔍 Response headers:",
+        Object.fromEntries(res.headers.entries())
+      );
+
+      const contentType = res.headers.get("content-type") || "";
+      const isJSON = contentType.includes("application/json");
+      const data = isJSON
+        ? await res.json().catch(() => ({}))
+        : await res.text();
+
+      if (!res.ok) {
+        const msg =
+          (data && data.message) ||
+          (typeof data === "string" ? data : "Request failed");
+        throw new Error(msg);
+      }
+      return data;
+    } catch (err) {
+      console.error("🔍 Fetch error:", err);
+      throw err;
     }
-    return data;
   }
 
   // --- Toasts ---
