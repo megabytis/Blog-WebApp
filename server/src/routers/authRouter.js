@@ -46,7 +46,7 @@ authRouter.post("/auth/login", async (req, res, next) => {
     if (isPasswordSame) {
       const token = jwt.sign(
         { _id: foundUserData._id },
-        "#MyBlogSecreKey1234----",
+        process.env.JWT_SECRET_KEY,
         {
           expiresIn: "1d",
         }

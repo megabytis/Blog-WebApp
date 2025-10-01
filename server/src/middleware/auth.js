@@ -9,7 +9,7 @@ const userAuth = async (req, res, next) => {
       throw new Error("Token not valid!");
     }
 
-    const foundUserObject = jwt.verify(token, "#MyBlogSecreKey1234----");
+    const foundUserObject = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const { _id } = foundUserObject;
 

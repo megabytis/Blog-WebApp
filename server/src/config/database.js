@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  mongoose
-    .connect("mongodb://localhost:27017/blog-DB")
-    
+  mongoose.connect(process.env.MONGO_CONNECTION_STRING);
 };
 module.exports = {
   connectDB,
