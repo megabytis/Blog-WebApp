@@ -12,30 +12,14 @@ const postRouter = require("./routers/postRouter");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // allow server-to-server / curl / Postman
-    if (!origin) return callback(null, true);
-
-    // you can whitelist multiple origins if needed
-    const allowed = [
-      "https://blog-web-app-eight-olive.vercel.app",
-      "http://localhost:3000",
-    ];
-
-    if (allowed.includes(origin)) {
-      callback(null, true); // echo the origin back
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(
+  cors({
+    origin: ["https://blog-web-app-eight-olive.vercel.app"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
+    // allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 
 // --- Middleware ---
 app.use(express.json());
