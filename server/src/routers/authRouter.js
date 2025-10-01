@@ -7,8 +7,6 @@ const { userModel } = require("../models/user");
 
 const authRouter = express.Router();
 
-authRouter.options("*", (req, res) => res.status(200).send());
-
 authRouter.post("/auth/signup", async (req, res, next) => {
   try {
     const { name, email, password, bio } = req.body;
