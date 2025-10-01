@@ -2,7 +2,7 @@ import axios from "axios";
 
 // TEMPORARY FIX - Use CORS proxy
 const API_BASE =
-  "https://cors-anywhere.herokuapp.com/https://blog-webapp-alzm.onrender.com";
+  "https://blog-webapp-alzm.onrender.com";
 
 const api = axios.create({
   baseURL: API_BASE,
