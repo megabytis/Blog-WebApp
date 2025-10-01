@@ -13,9 +13,6 @@
 
   // --- Storage & Auth ---
   const storage = {
-    getToken: () => localStorage.getItem("auth_token") || "",
-    setToken: (t) => localStorage.setItem("auth_token", t || ""),
-    clearToken: () => localStorage.removeItem("auth_token"),
     getUser: () => {
       try {
         return JSON.parse(localStorage.getItem("auth_user") || "null");
@@ -609,48 +606,51 @@
 
   async function viewSignup() {
     app.innerHTML = `
-      <section class="card center" style="min-height:40vh;">
-        <div class="card-inner" style="width:min(520px, 100%);">
-          <h2 style="margin:0 0 8px;">Create an account</h2>
-          <p class="helper" style="margin:0 0 12px;">Start posting and join the discussion.</p>
-          <form id="signupForm">
-            <div class="form-group">
-              <label class="label" for="email">Email</label>
-              <input class="input" id="email" name="email" type="email" required />
-            </div>
-            <div class="form-group">
-              <label class="label" for="password">Password</label>
-              <input class="input" id="password" name="password" type="password" required />
-            </div>
-            <button class="btn btn-primary btn-wide" type="submit">Sign up</button>
-          </form>
-          <p class="helper" style="margin-top:10px;">Have an account? <a href="#/login">Log in</a></p>
-        </div>
-      </section>
-    `;
+    <section class="card center" style="min-height:40vh;">
+      <div class="card-inner" style="width:min(520px, 100%);">
+        <h2 style="margin:0 0 8px;">Create an account</h2>
+        <p class="helper" style="margin:0 0 12px;">Start posting and join the discussion.</p>
+        <form id="signupForm">
+          <div class="form-group">
+            <label class="label" for="name">Name</label>
+            <input class="input" id="name" name="name" type="text" required />
+          </div>
+          <div class="form-group">
+            <label class="label" for="email">Email</label>
+            <input class="input" id="email" name="email" type="email" required />
+          </div>
+          <div class="form-group">
+            <label class="label" for="password">Password</label>
+            <input class="input" id="password" name="password" type="password" required />
+          </div>
+          <div class="form-group">
+            <label class="label" for="bio">Bio</label>
+            <textarea class="textarea" id="bio" name="bio" placeholder="Tell us about yourself..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-wide" type="submit">Sign up</button>
+        </form>
+        <p class="helper" style="margin-top:10px;">Have an account? <a href="#/login">Log in</a></p>
+      </div>
+    </section>
+  `;
+
     $("#signupForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
+      const name = (fd.get("name") || "").toString().trim();
       const email = (fd.get("email") || "").toString().trim();
       const password = (fd.get("password") || "").toString();
+      const bio = (fd.get("bio") || "").toString().trim();
+
       try {
         const data = await fetchJSON("/auth/signup", {
           method: "POST",
-          body: { email, password },
+          body: { name, email, password, bio },
           credentials: "include",
         });
-        // If API logs in on signup, capture token, else redirect to login
-        const token = data.token || data.accessToken || "";
-        if (token) {
-          storage.setToken(token);
-          storage.setUser(data.user || { email });
-          toast("Signed up and logged in", "ok");
-          updateNav();
-          toHash("#/");
-        } else {
-          toast("Account created. Please log in.", "ok");
-          toHash("#/login");
-        }
+
+        toast("Account created. Please log in.", "ok");
+        toHash("#/login");
       } catch (err) {
         toast(err.message || "Signup failed", "err");
       }
@@ -810,11 +810,11 @@
   // --- Logout ---
   async function doLogout() {
     try {
-      await fetchJSON("/auth/logout", { method: "POST", auth: true }).catch(
-        () => {}
-      );
+      await fetchJSON("/auth/logout", {
+        method: "POST",
+        credentials: "include", // ✅ Important for cookies
+      }).catch(() => {});
     } finally {
-      storage.clearToken();
       storage.clearUser();
       updateNav();
       toast("Logged out", "ok");
