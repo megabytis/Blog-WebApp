@@ -7,27 +7,7 @@ const { userModel } = require("../models/user");
 
 const authRouter = express.Router();
 
-// FIXED: Handle OPTIONS preflight for ALL auth routes
-authRouter.options("*", (req, res) => {
-  const allowedOrigins = [
-    "https://blog-web-app-eight-olive.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-  ];
-
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
-  res.status(200).end();
-});
-
-// FIXED: Remove "/auth" prefix from routes since app.use("/auth", authRouter) already adds it
-authRouter.post("/signup", async (req, res, next) => {
+authRouter.post("/auth/signup", async (req, res, next) => {
   try {
     const { name, email, password, bio } = req.body;
 
@@ -49,8 +29,7 @@ authRouter.post("/signup", async (req, res, next) => {
   }
 });
 
-// FIXED: Remove "/auth" prefix
-authRouter.post("/login", async (req, res, next) => {
+authRouter.post("/auth/login", async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -92,7 +71,7 @@ authRouter.post("/login", async (req, res, next) => {
 });
 
 // FIXED: Remove "/auth" prefix
-authRouter.post("/logout", (req, res, next) => {
+authRouter.post("/auth/logout", (req, res, next) => {
   res.clearCookie("token", {
     httpOnly: true,
     secure: true,
