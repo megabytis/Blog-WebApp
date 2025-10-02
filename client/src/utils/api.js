@@ -1,4 +1,4 @@
-const API_BASE = "https://blog-webapp-alzm.onrender.com";
+const API_BASE = process.env.VITE_API_BASE;
 
 export const api = {
   async request(path, options = {}) {
