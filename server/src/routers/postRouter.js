@@ -10,13 +10,6 @@ const {
 
 const postRouter = express.Router();
 
-postRouter.use((req, res, next) => {
-  console.log(`📍 PostRouter hit: ${req.method} ${req.path}`);
-  console.log(`📍 Original URL: ${req.originalUrl}`);
-  console.log(`📍 Cookies:`, req.cookies);
-  next();
-});
-
 const SAFE_PROPERTIES_TO_DISPLAY = [
   "title",
   "content",
@@ -62,7 +55,6 @@ postRouter.post("/posts", userAuth, async (req, res, next) => {
 
 postRouter.get("/posts", async (req, res, next) => {
   try {
-    console.log("✅ POSTS ROUTE HIT - This should show in logs");
 
     let { page = 1, search, tags, minlikes, author, authorID } = req.query;
 
