@@ -27,3 +27,7 @@ const userAuth = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports = {
+  userAuth,
+};
