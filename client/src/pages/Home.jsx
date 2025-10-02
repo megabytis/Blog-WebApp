@@ -91,7 +91,7 @@ export default function Home() {
                 : post.content}
             </p>
             <div className="card-actions">
-              <Link to={`/post/${post._id}`} className="btn btn-primary btn-sm">
+              <Link to={`/posts/${post._id}`} className="btn btn-primary btn-sm">
                 Read More
               </Link>
               {post.tags?.length > 0 && (

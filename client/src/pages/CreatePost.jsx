@@ -49,7 +49,7 @@ export default function CreatePost() {
 
       const data = await api.post("/posts", postData);
       showToast("Post created successfully!", "success");
-      navigate(`/post/${data.data._id}`);
+      navigate(`/posts/${data.data._id}`);
     } catch (err) {
       showToast(err.message, "error");
     } finally {

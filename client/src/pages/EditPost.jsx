@@ -73,7 +73,7 @@ export default function EditPost() {
 
       await api.patch(`/posts/${id}`, updateData);
       showToast("Post updated successfully!", "success");
-      navigate(`/post/${id}`);
+      navigate(`/posts/${id}`);
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -151,7 +151,7 @@ export default function EditPost() {
             </button>
             <button
               type="button"
-              onClick={() => navigate(`/post/${id}`)}
+              onClick={() => navigate(`/posts/${id}`)}
               className="btn btn-ghost"
             >
               Cancel
