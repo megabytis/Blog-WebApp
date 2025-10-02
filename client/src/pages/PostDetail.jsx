@@ -135,7 +135,7 @@ export default function PostDetail() {
         {isPostOwner && (
           <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
             <button
-              onClick={() => navigate(`/post/${id}/edit`)}
+              onClick={() => navigate(`/posts/${id}/edit`)}
               className="btn btn-ghost btn-sm"
             >
               Edit

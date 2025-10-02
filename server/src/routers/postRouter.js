@@ -55,7 +55,6 @@ postRouter.post("/posts", userAuth, async (req, res, next) => {
 
 postRouter.get("/posts", async (req, res, next) => {
   try {
-
     let { page = 1, search, tags, minlikes, author, authorID } = req.query;
 
     // PAGINATION
@@ -395,11 +394,6 @@ postRouter.get("/posts/:postID/likes/count", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-});
-
-// Add this at the top of post-router.js
-postRouter.get("/test-public", (req, res) => {
-  res.json({ message: "This is a public test route - no auth required!" });
 });
 
 module.exports = postRouter;
