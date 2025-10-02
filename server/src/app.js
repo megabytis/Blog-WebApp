@@ -23,6 +23,12 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  console.log(`🚨 APP.JS - Incoming: ${req.method} ${req.originalUrl}`);
+  console.log(`🚨 APP.JS - Path: ${req.path}`);
+  next();
+});
+
 // ✅ Router prefixes
 app.use("/", postRouter);
 app.use("/", authRouter);

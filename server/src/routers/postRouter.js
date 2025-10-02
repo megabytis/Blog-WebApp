@@ -10,6 +10,13 @@ const {
 
 const postRouter = express.Router();
 
+postRouter.use((req, res, next) => {
+  console.log(`📍 PostRouter hit: ${req.method} ${req.path}`);
+  console.log(`📍 Original URL: ${req.originalUrl}`);
+  console.log(`📍 Cookies:`, req.cookies);
+  next();
+});
+
 const SAFE_PROPERTIES_TO_DISPLAY = [
   "title",
   "content",
