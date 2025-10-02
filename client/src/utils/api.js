@@ -5,7 +5,7 @@ export const api = {
     const url = `${API_BASE}${path}`;
 
     const config = {
-      credentials: "include", // Important for cookies
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         ...options.headers,
@@ -18,6 +18,16 @@ export const api = {
     }
 
     const response = await fetch(url, config);
+
+    // If it's a 401 (Unauthorized) but we're trying to access public content,
+    // don't throw error, return empty data instead
+    if (
+      response.status === 401 &&
+      (path.includes("/posts") || path.includes("/comments"))
+    ) {
+      console.log("User not logged in, returning empty data for public route");
+      return { post: [], data: [] }; // Return empty data structure
+    }
 
     const contentType = response.headers.get("content-type");
     const data = contentType?.includes("application/json")
