@@ -29,6 +29,18 @@ app.use((req, res, next) => {
   next();
 });
 
+// ✅ SIMPLE health check - no dependencies
+app.get("/health", (req, res) => {
+  console.log("✅ Health check hit!");
+  res.json({ status: "OK", message: "Server is running" });
+});
+
+// ✅ SIMPLE test route
+app.get("/simple-test", (req, res) => {
+  console.log("✅ Simple test hit!");
+  res.json({ message: "Simple test works!" });
+});
+
 // ✅ Router prefixes
 app.use("/", postRouter);
 app.use("/", authRouter);
