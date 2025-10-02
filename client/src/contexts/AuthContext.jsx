@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const savedUser = localStorage.getItem("auth_user");
-    if (savedUser) {
+    if (savedUser && savedUser !== "undefined") {
       setUser(JSON.parse(savedUser));
     }
     setLoading(false);
