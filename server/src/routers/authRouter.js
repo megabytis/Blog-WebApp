@@ -9,26 +9,8 @@ const authRouter = express.Router();
 
 authRouter.post("/auth/signup", async (req, res, next) => {
   try {
-    console.log("🔍 SIGNUP REQUEST RECEIVED");
-    console.log("🔍 Request body:", req.body);
-
     const { name, email, password, bio } = req.body;
 
-    // Check if required fields exist
-    if (!name || !email || !password) {
-      console.log("❌ Missing required fields");
-      throw new Error("Name, email, and password are required");
-    }
-
-    console.log("🔍 Starting validation...");
-    validateSignupData(req);
-    console.log("🔍 Validation passed");
-
-    console.log("🔍 Hashing password...");
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("🔍 Password hashed");
-
-    console.log("🔍 Creating user model...");
     const user = new userModel({
       name: name,
       email: email,
@@ -36,9 +18,7 @@ authRouter.post("/auth/signup", async (req, res, next) => {
       bio: bio,
     });
 
-    console.log("🔍 Saving user to database...");
     const newUser = await user.save();
-    console.log("✅ User saved successfully:", newUser._id);
 
     res.json({
       message: `User added successfully`,
@@ -50,8 +30,6 @@ authRouter.post("/auth/signup", async (req, res, next) => {
       },
     });
   } catch (err) {
-    console.error("🔥 SIGNUP ERROR:", err.message);
-    console.error("🔥 ERROR DETAILS:", err);
     next(err);
   }
 });
@@ -97,7 +75,6 @@ authRouter.post("/auth/login", async (req, res, next) => {
   }
 });
 
-// FIXED: Remove "/auth" prefix
 authRouter.post("/auth/logout", (req, res, next) => {
   res.clearCookie("token", {
     httpOnly: true,

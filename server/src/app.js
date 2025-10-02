@@ -23,15 +23,6 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.get("/health", (req, res) => {
-  res.json({
-    status: "OK",
-    message: "Server is running",
-    timestamp: new Date().toISOString(),
-    database: "Connected", // Since we see DB connected in logs
-  });
-});
-
 // ✅ Router prefixes
 app.use("/", authRouter);
 app.use("/", postRouter);

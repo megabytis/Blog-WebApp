@@ -55,6 +55,8 @@ postRouter.post("/posts", userAuth, async (req, res, next) => {
 
 postRouter.get("/posts", async (req, res, next) => {
   try {
+    console.log("✅ POSTS ROUTE HIT - This should show in logs");
+
     let { page = 1, search, tags, minlikes, author, authorID } = req.query;
 
     // PAGINATION
