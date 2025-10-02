@@ -53,7 +53,7 @@ postRouter.post("/posts", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get("/posts", userAuth, async (req, res, next) => {
+postRouter.get("/posts", async (req, res, next) => {
   try {
     let { page = 1, search, tags, minlikes, author, authorID } = req.query;
 
@@ -130,7 +130,7 @@ postRouter.get("/posts", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get("/posts/:postID", userAuth, async (req, res, next) => {
+postRouter.get("/posts/:postID", async (req, res, next) => {
   try {
     const postID = req.params?.postID;
 
@@ -253,7 +253,7 @@ postRouter.post("/posts/:postID/comments", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get("/posts/:postID/comments", userAuth, async (req, res, next) => {
+postRouter.get("/posts/:postID/comments", async (req, res, next) => {
   try {
     const postID = req.params.postID;
 
@@ -381,23 +381,19 @@ postRouter.patch("/posts/:postID/like", userAuth, async (req, res, next) => {
   }
 });
 
-postRouter.get(
-  "/posts/:postID/likes/count",
-  userAuth,
-  async (req, res, next) => {
-    try {
-      const { postID } = req.params;
+postRouter.get("/posts/:postID/likes/count", async (req, res, next) => {
+  try {
+    const { postID } = req.params;
 
-      const foundPost = await postModel.findById(postID);
-      if (!foundPost) {
-        throw new Error("Post not found!");
-      }
-
-      res.json({ message: `Post has ${foundPost.likesCount} likes 🥰` });
-    } catch (err) {
-      next(err);
+    const foundPost = await postModel.findById(postID);
+    if (!foundPost) {
+      throw new Error("Post not found!");
     }
+
+    res.json({ message: `Post has ${foundPost.likesCount} likes 🥰` });
+  } catch (err) {
+    next(err);
   }
-);
+});
 
 module.exports = postRouter;
