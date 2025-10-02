@@ -13,9 +13,9 @@ require("dotenv").config();
 
 app.use(
   cors({
-    // origin: ["https://blog-webapp-ui.onrender.com"], // array, not string
-    // methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    origin: true,
+    origin: ["https://blog-webapp-ui.onrender.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    // origin: true,
     credentials: true,
   })
 );
