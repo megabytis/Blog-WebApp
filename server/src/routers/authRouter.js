@@ -68,6 +68,12 @@ authRouter.post("/auth/login", async (req, res, next) => {
 
       res.json({
         message: "Login Successful",
+        user: {
+          _id: foundUserData._id,
+          name: foundUserData.name,
+          email: foundUserData.email,
+          bio: foundUserData.bio,
+        },
       });
     } else {
       throw new Error("Invalid Credential");
