@@ -396,4 +396,43 @@ postRouter.get("/posts/:postID/likes/count", async (req, res, next) => {
   }
 });
 
+// ####################
+// VERIFY POST OWNER
+// ####################
+
+postRouter.get(
+  "/posts/:postID/verify-owner",
+  userAuth,
+  async (req, res, next) => {
+    try {
+      const loggedInUser = req.user;
+      const postID = req.params?.postID;
+
+      const foundPost = await postModel.findById(postID);
+
+      if (!foundPost) {
+        throw new Error("Post not Found!");
+      }
+
+      // Check if current user is the post author
+      const isOwner =
+        foundPost.author.toString() === loggedInUser._id.toString();
+
+      if (isOwner) {
+        res.json({
+          authorized: true,
+          message: "User is authorized to edit this post",
+        });
+      } else {
+        res.status(403).json({
+          authorized: false,
+          message: "You are not authorized to edit this post",
+        });
+      }
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
 module.exports = postRouter;
