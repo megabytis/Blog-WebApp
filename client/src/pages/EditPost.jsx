@@ -46,10 +46,7 @@ export default function EditPost() {
   };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -64,14 +61,13 @@ export default function EditPost() {
             .filter(Boolean)
         : [];
 
-      const updateData = {
+      await api.patch(`/posts/${id}`, {
         title: formData.title,
         content: formData.content,
-        ...(formData.image && { image: formData.image }),
+        image: formData.image,
         tags,
-      };
+      });
 
-      await api.patch(`/posts/${id}`, updateData);
       showToast("Post updated successfully!", "success");
       navigate(`/posts/${id}`);
     } catch (err) {
@@ -92,10 +88,10 @@ export default function EditPost() {
   return (
     <div style={{ maxWidth: "600px", margin: "0 auto" }}>
       <div className="card">
-        <h2 style={{ marginBottom: "1rem" }}>Edit Post</h2>
+        <h2>Edit Post</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="label">Title</label>
+            <label>Title</label>
             <input
               type="text"
               name="title"
@@ -106,7 +102,7 @@ export default function EditPost() {
             />
           </div>
           <div className="form-group">
-            <label className="label">Content</label>
+            <label>Content</label>
             <textarea
               name="content"
               value={formData.content}
@@ -117,18 +113,17 @@ export default function EditPost() {
             />
           </div>
           <div className="form-group">
-            <label className="label">Image URL (optional)</label>
+            <label>Image URL (optional)</label>
             <input
               type="url"
               name="image"
               value={formData.image}
               onChange={handleChange}
               className="input"
-              placeholder="https://example.com/image.jpg"
             />
           </div>
           <div className="form-group">
-            <label className="label">Tags (optional)</label>
+            <label>Tags (optional)</label>
             <input
               type="text"
               name="tags"
@@ -137,9 +132,6 @@ export default function EditPost() {
               className="input"
               placeholder="javascript, react, node"
             />
-            <small style={{ color: "#6b7280" }}>
-              Separate tags with commas
-            </small>
           </div>
           <div style={{ display: "flex", gap: "1rem" }}>
             <button

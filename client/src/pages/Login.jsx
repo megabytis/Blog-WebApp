@@ -1,23 +1,17 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../utils/api";
 import { showToast } from "../utils/toast";
 
 export default function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -25,11 +19,12 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await api.post("/auth/login", formData);
+      const response = await api.post("/auth/login", formData);
 
-      // Since login doesn't return user data, we'll store what we have
-      login({ email: formData.email });
-      showToast("Logged in successfully!", "success");
+      // Store user data from response
+      login(response.user); // This now receives the user object
+
+      showToast("Login successful!", "success");
       navigate("/");
     } catch (err) {
       showToast(err.message, "error");
@@ -39,9 +34,9 @@ export default function Login() {
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto" }}>
+    <div style={{ maxWidth: "400px", margin: "2rem auto" }}>
       <div className="card">
-        <h2 style={{ marginBottom: "1rem" }}>Login</h2>
+        <h2 style={{ textAlign: "center", marginBottom: "1.5rem" }}>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label className="label">Email</label>

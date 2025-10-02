@@ -25,7 +25,7 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await api.post("/auth/signup", formData);
+      const response = await api.post("/auth/signup", formData);
       showToast("Account created successfully! Please login.", "success");
       navigate("/login");
     } catch (err) {
