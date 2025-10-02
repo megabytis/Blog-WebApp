@@ -24,8 +24,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 // ✅ Router prefixes
-app.use("/", authRouter);
 app.use("/", postRouter);
+app.use("/", authRouter);
 
 // Global error handler
 app.use((err, req, res, next) => {
