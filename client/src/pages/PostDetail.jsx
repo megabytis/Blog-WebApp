@@ -153,8 +153,24 @@ export default function PostDetail() {
     }
   };
 
-  const handleEditPost = () => {
-    navigate(`/posts/${id}/edit`);
+  const handleEditPost = async () => {
+    if (!isAuthenticated) {
+      showToast("Please login to edit posts", "warning");
+      navigate("/login");
+      return;
+    }
+
+    // verifying use is the post author or not
+    if (!isPostOwner) {
+      showToast("You can edit only edit your own posts", "error");
+    }
+
+    try {
+      await api.get(`/posts/${id}`);
+      navigate(`/posts/${id}/edit`);
+    } catch (err) {
+      showToast("You are not authorized to edit this post", "error");
+    }
   };
 
   // Check if current user is the post owner
