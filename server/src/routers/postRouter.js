@@ -398,4 +398,9 @@ postRouter.get("/posts/:postID/likes/count", async (req, res, next) => {
   }
 });
 
+// Add this at the top of post-router.js
+postRouter.get("/test-public", (req, res) => {
+  res.json({ message: "This is a public test route - no auth required!" });
+});
+
 module.exports = postRouter;
