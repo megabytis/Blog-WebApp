@@ -54,18 +54,18 @@ It features user authentication, CRUD posts, likes, comments, search, and respon
 Clone the project and install dependencies:
 
 ```bash
-git clone https://github.com/megabytis/devTinder-WebApp.git
-cd devTinder-WebApp
+git clone https://github.com/megabytis/Blog-WebApp.git
+cd Blog-WebApp
 
 # Backend
 cd server
 npm install
-npm start
+npm run dev
 
 # Frontend
 cd client
 npm install
-npm start
+npm run dev
 ```
 
 ## 🛣 Roadmap / Future Improvements
