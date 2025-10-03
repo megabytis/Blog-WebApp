@@ -14,7 +14,7 @@ export default function Home() {
 
   useEffect(() => {
     loadPosts();
-  }, []);
+  }, [page]);
 
   const loadPosts = async () => {
     try {
