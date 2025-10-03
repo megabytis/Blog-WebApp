@@ -13,7 +13,7 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: ["https://blog-web-app-alpha.vercel.app", "http://localhost:3000"],
+    origin: ["https://blog-web-app-psi.vercel.app", "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     // origin: true,
     credentials: true,
