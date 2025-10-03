@@ -87,6 +87,23 @@ export default function PostDetail() {
     }
   };
 
+  const handleDeletePost = async () => {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this post? This action cannot be undone."
+      )
+    )
+      return;
+
+    try {
+      await api.delete(`/posts/${id}`);
+      showToast("Post deleted successfully!", "success");
+      navigate("/posts");
+    } catch (err) {
+      showToast(err.message, "error");
+    }
+  };
+
   if (loading) {
     return (
       <div className="loading">
@@ -115,6 +132,12 @@ export default function PostDetail() {
               className="btn btn-ghost btn-sm"
             >
               Edit
+            </button>
+            <button
+              onClick={handleDeletePost}
+              className="btn btn-danger btn-sm"
+            >
+              Delete
             </button>
           </div>
         )}
