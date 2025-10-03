@@ -16,6 +16,7 @@ const SAFE_PROPERTIES_TO_DISPLAY = [
   "image",
   "likes",
   "author",
+  "likesCount",
 ];
 
 // ######
