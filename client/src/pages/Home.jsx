@@ -9,6 +9,7 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [tags, setTags] = useState("");
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const limit = 6;
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function Home() {
 
       const data = await api.get(`/posts?${params}`);
       setPosts(data.post || []);
+      setTotalPages(data.pagination?.totalPages || 1);
     } catch (err) {
       showToast(err.message, "error");
     } finally {
@@ -138,7 +140,7 @@ export default function Home() {
         </span>
         <button
           onClick={() => setPage((p) => p + 1)}
-          disabled={posts.length < limit}
+          disabled={page === totalPages}
           className="btn btn-ghost"
         >
           Next
