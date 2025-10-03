@@ -390,7 +390,7 @@ postRouter.get("/posts/:postID/likes/count", async (req, res, next) => {
       throw new Error("Post not found!");
     }
 
-    res.json({ message: `Post has ${foundPost.likesCount} likes 🥰` });
+    res.json({ likesCount: foundPost.likesCount });
   } catch (err) {
     next(err);
   }
