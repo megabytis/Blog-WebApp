@@ -3,8 +3,8 @@
 A full-stack blogging platform built with the **MERN stack** (MongoDB, Express, React, Node.js).  
 It features user authentication, CRUD posts, likes, comments, search, and responsive design.
 
-👉 **Live Demo:** [Vercel Link]  
-👉 **GitHub Repo:** [Repo Link]  
+👉 **Live Demo:** [https://blog-web-app-psi.vercel.app/]  
+👉 **GitHub Repo:** [https://github.com/megabytis/Blog-WebApp/]  
 
 ---
 
