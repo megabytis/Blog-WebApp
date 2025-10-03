@@ -169,7 +169,7 @@ export default function PostDetail() {
           <div key={comment._id} className="card">
             <p>{comment.text}</p>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>by {comment.user?.name || comment.user?.email}</span>
+              <span>{comment.user?.name || comment.user?.email}</span>
               {user && comment.user && user.email === comment.user.email && (
                 <button
                   onClick={() => handleDeleteComment(comment._id)}
