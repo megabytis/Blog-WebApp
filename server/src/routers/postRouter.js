@@ -125,7 +125,16 @@ postRouter.get("/posts", async (req, res, next) => {
       .skip(skip)
       .limit(limit);
 
-    res.json({ message: "post", post: posts });
+    res.json({
+      message: "post",
+      post: posts,
+      pagination: {
+        page,
+        limit,
+        totalPosts,
+        totalPages,
+      },
+    });
   } catch (err) {
     next(err);
   }
