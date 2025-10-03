@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "src": "/login",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/signup",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/posts/.*",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
