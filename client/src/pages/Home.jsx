@@ -13,7 +13,7 @@ export default function Home() {
 
   useEffect(() => {
     loadPosts();
-  }, [page, search, tags]);
+  }, []);
 
   const loadPosts = async () => {
     try {
@@ -91,7 +91,10 @@ export default function Home() {
                 : post.content}
             </p>
             <div className="card-actions">
-              <Link to={`/posts/${post._id}`} className="btn btn-primary btn-sm">
+              <Link
+                to={`/posts/${post._id}`}
+                className="btn btn-primary btn-sm"
+              >
                 Read More
               </Link>
               {post.tags?.length > 0 && (
